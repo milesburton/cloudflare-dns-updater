@@ -4,9 +4,11 @@ This project is a simple TypeScript application using Bun that updates the Cloud
 
 ## 📌 Prerequisites
 
-- 🛠 [Bun](https://bun.sh/) installed (if you plan to run locally rather than via docker)
-- 🐳 Docker installed (optional for containerisation)
 - 🔑 A Cloudflare API token with DNS edit permissions
+- ⛳ Your domain name (for example google.com)
+- 🛠 optional [Bun](https://bun.sh/) installed (if you plan to run locally rather than via docker)
+- 🐳 optional Docker installed (for containerisation)
+
 
 ## ⚙️ Configuration
 

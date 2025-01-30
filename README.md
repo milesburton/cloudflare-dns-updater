@@ -5,7 +5,7 @@ This project is a simple TypeScript application using Bun that updates the Cloud
 ## 📌 Prerequisites
 
 - 🛠 [Bun](https://bun.sh/) installed
-- 🐳 Docker installed (optional for containerization)
+- 🐳 Docker installed (optional for containerisation)
 - 🔑 A Cloudflare API token with DNS edit permissions
 
 ## ⚙️ Configuration
@@ -155,6 +155,6 @@ docker logs cloudflare-dns-updater
 
 Ensure that your `.env` file is correctly set up and that your Cloudflare API token has the required permissions.
 
-## 📜 License
-This project is licensed under the [MIT License](LICENSE).
+## 📜 Licence
+This project is licenced under the [MIT License](LICENSE).
 

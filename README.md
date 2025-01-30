@@ -108,7 +108,12 @@ bun run start --interval=30  # Check every 30 minutes
 
 ### Docker Deployment
 
-First, build the container:
+First, ensure your configuration directory exists:
+```sh
+mkdir -p ~/cloudflare-dns-updater-config
+```
+
+Next, build the container:
 ```sh
 docker build -t cloudflare-dns-updater .
 ```
@@ -126,7 +131,12 @@ docker run -d \
   --env-file ~/cloudflare-dns-updater-config/.env \
   -v ~/cloudflare-dns-updater-config:/app/config \
   cloudflare-dns-updater
+
+# View the logs (container will exit after completion)
+docker logs cloudflare-dns-updater
 ```
+
+The container will exit after performing the check - this is expected behavior. All output is directed to Docker logs.
 
 #### Continuous Monitoring Mode
 ```sh
@@ -140,27 +150,85 @@ docker run -d \
   --env-file ~/cloudflare-dns-updater-config/.env \
   -v ~/cloudflare-dns-updater-config:/app/config \
   cloudflare-dns-updater --interval=15
+
+# Follow the logs in real-time
+docker logs -f cloudflare-dns-updater
 ```
 
-### Managing Docker Containers
+The container will keep running and checking periodically. All output is directed to Docker logs.
+```
 
-To manage existing containers:
+### Monitoring Container Status
+
+To verify the container is running correctly:
+```sh
+# View container logs (follow mode)
+docker logs -f cloudflare-dns-updater
+
+# Check container status
+docker ps | grep cloudflare-dns-updater
+```
+
+### Testing the Container
+
+You can run the container in test mode to verify configuration without making actual DNS updates:
+```sh
+docker run --rm \
+  --env-file ~/cloudflare-dns-updater-config/.env \
+  -v ~/cloudflare-dns-updater-config:/app/config \
+  cloudflare-dns-updater --test
+```
+
+### Troubleshooting
+
+If the container exits immediately:
+
+1. Check container logs:
+```sh
+docker logs cloudflare-dns-updater
+```
+
+2. Verify your environment file:
+```sh
+ls -l ~/cloudflare-dns-updater-config/.env
+cat ~/cloudflare-dns-updater-config/.env  # Check contents
+```
+
+3. Test with environment debugging:
+```sh
+docker run --rm \
+  --env-file ~/cloudflare-dns-updater-config/.env \
+  -v ~/cloudflare-dns-updater-config:/app/config \
+  cloudflare-dns-updater --test
+```
+
+Common issues:
+- Missing or incorrect environment variables
+- Permission issues with the config directory
+- Network connectivity problems
+- Invalid Cloudflare API token
+```
+
+### Docker Output and Logs
+
+When running in Docker, all application output is directed to the Docker logs system rather than standard output. There are several ways to view the logs:
 
 ```sh
-# Stop the container
-docker stop cloudflare-dns-updater
-
-# Remove the container
-docker rm cloudflare-dns-updater
-
-# Stop and remove in one command
-docker rm -f cloudflare-dns-updater
-
-# View container logs
+# View all logs
 docker logs cloudflare-dns-updater
 
-# View container status
-docker ps -a | grep cloudflare-dns-updater
+# Follow logs in real-time
+docker logs -f cloudflare-dns-updater
+
+# View the last 100 lines
+docker logs --tail 100 cloudflare-dns-updater
+
+# View logs with timestamps
+docker logs -t cloudflare-dns-updater
+```
+
+Note: In one-time check mode, the container will exit after completion - this is expected behavior. To verify the operation was successful, check the logs using the commands above.
+```
 ```
 
 ### Cron Job Setup (Alternative to --interval)

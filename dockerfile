@@ -4,7 +4,7 @@ FROM oven/bun:latest
 WORKDIR /app
 
 # Copy package files and install dependencies
-COPY package.json bun.lock ./
+COPY package.json bun.lockb ./
 RUN bun install
 
 # Copy application files
@@ -16,6 +16,8 @@ EXPOSE 3000
 # Ensure the .env file is loaded from an external volume
 VOLUME /app/config
 
-# Command to run the application
-CMD ["bun", "run", "index.ts"]
+# Use ENTRYPOINT to make the container more executable-like
+ENTRYPOINT ["bun", "run", "index.ts"]
 
+# Default CMD which can be overridden
+CMD []

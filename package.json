@@ -1,0 +1,25 @@
+{
+  "name": "cloudflare-dns-updater",
+  "version": "1.0.0",
+  "description": "A Bun-based application to update Cloudflare DNS records when the external IP changes.",
+  "main": "index.ts",
+  "scripts": {
+    "start": "bun run index.ts",
+    "test": "bun run index.ts --test",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "dotenv": "latest",
+    "pino": "^9.6.0"
+  },
+  "devDependencies": {
+    "eslint": "latest",
+    "prettier": "latest",
+    "typescript": "latest",
+    "@types/node": "latest",
+    "@types/dotenv": "latest"
+  },
+  "author": "",
+  "license": "MIT"
+}

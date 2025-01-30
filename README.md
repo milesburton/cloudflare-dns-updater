@@ -227,8 +227,6 @@ docker logs -t cloudflare-dns-updater
 ```
 
 Note: In one-time check mode, the container will exit after completion - this is expected behavior. To verify the operation was successful, check the logs using the commands above.
-```
-```
 
 ### Cron Job Setup (Alternative to --interval)
 

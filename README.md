@@ -18,7 +18,6 @@ Ensure that a `.env` file exists in the project root. If it does not exist, crea
 if [ ! -f .env ]; then
   cat <<EOT >> .env
 CLOUDFLARE_API_TOKEN=your_cloudflare_api_token
-ZONE_ID=your_zone_id
 DOMAIN=your_domain
 CHECK_IP_SERVICE=https://api64.ipify.org?format=json
 EOT

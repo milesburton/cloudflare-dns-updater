@@ -134,6 +134,18 @@ To manually test that the script works without updating Cloudflare, log IP value
 bun run start --test
 ```
 
+To force an update even if the IP hasn't changed, use:
+```sh
+bun run start --force
+```
+
+This can be useful for testing or ensuring DNS propagation.
+
+To manually test that the script works without updating Cloudflare, log IP values:
+```sh
+bun run start --test
+```
+
 ## 🔧 Handling Errors and Debugging
 
 If you encounter errors, check the logs using:

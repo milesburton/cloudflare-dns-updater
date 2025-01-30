@@ -22,6 +22,7 @@ const CHECK_IP_SERVICE = process.env.CHECK_IP_SERVICE;
 
 const args = process.argv.slice(2);
 const isTestMode = args.includes("--test");
+const isForceUpdate = args.includes("--force");
 
 async function getCurrentIP(): Promise<string | null> {
   try {
@@ -131,12 +132,16 @@ async function main() {
   if (!currentIP) return;
 
   const cloudflareIP = await getCloudflareDNSRecord();
-  if (cloudflareIP === currentIP) {
+  if (cloudflareIP === currentIP && !isForceUpdate) {
     logger.info("✅ IP address unchanged, no update needed.");
   } else {
-    logger.info(`🔄 IP has changed from ${cloudflareIP} to ${currentIP}, updating...`);
+    if (isForceUpdate) {
+      logger.warn("⚠️  Force update enabled, updating Cloudflare DNS record regardless of IP match.");
+    }
+    logger.info(`🔄 Updating Cloudflare DNS record from ${cloudflareIP} to ${currentIP}...`);
     await updateCloudflareDNS(currentIP);
   }
+  
 }
 
 main();

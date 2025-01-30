@@ -108,27 +108,59 @@ bun run start --interval=30  # Check every 30 minutes
 
 ### Docker Deployment
 
-1. Build the container:
+First, build the container:
 ```sh
 docker build -t cloudflare-dns-updater .
 ```
 
-2. Run with persistent configuration:
+Then, choose one of the following deployment modes:
+
+#### One-time Check Mode
 ```sh
-# One-time check
+# Remove existing container if present
+docker rm -f cloudflare-dns-updater || true
+
+# Run container in one-time check mode
 docker run -d \
   --name cloudflare-dns-updater \
   --env-file ~/cloudflare-dns-updater-config/.env \
   -v ~/cloudflare-dns-updater-config:/app/config \
   cloudflare-dns-updater
+```
 
-# Continuous monitoring
+#### Continuous Monitoring Mode
+```sh
+# Remove existing container if present
+docker rm -f cloudflare-dns-updater || true
+
+# Run container in continuous monitoring mode (checking every 15 minutes)
 docker run -d \
   --name cloudflare-dns-updater \
   --restart unless-stopped \
   --env-file ~/cloudflare-dns-updater-config/.env \
   -v ~/cloudflare-dns-updater-config:/app/config \
   cloudflare-dns-updater --interval=15
+```
+
+### Managing Docker Containers
+
+To manage existing containers:
+
+```sh
+# Stop the container
+docker stop cloudflare-dns-updater
+
+# Remove the container
+docker rm cloudflare-dns-updater
+
+# Stop and remove in one command
+docker rm -f cloudflare-dns-updater
+
+# View container logs
+docker logs cloudflare-dns-updater
+
+# View container status
+docker ps -a | grep cloudflare-dns-updater
 ```
 
 ### Cron Job Setup (Alternative to --interval)

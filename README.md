@@ -22,7 +22,7 @@ ZONE_ID=your_zone_id
 DOMAIN=london.agileview.co.uk
 CHECK_IP_SERVICE=https://api64.ipify.org?format=json
 EOT
-  echo ".env file created. Please update it with your actual credentials."
+  echo "✅ .env file created. Please update it with your actual credentials."
 fi
 ```
 
@@ -66,6 +66,14 @@ Now, modifications to `~/cloudflare-dns-updater-config/.env` will be reflected i
    ```sh
    bun run index.ts
    ```
+
+
+## 📜 Example Output (Formatted Logs)
+```
+12:34:56 Z 🚀 Starting Cloudflare Dynamic DNS updater...
+12:34:57 Z 🌍 Fetching current public IP...
+12:34:58 Z ✅ Current IP retrieved: 192.168.1.1
+```
 
 ## 🛠 Code Formatting and Linting
 
@@ -119,7 +127,7 @@ To run the container persistently in the background and restart on system reboot
    docker stop cloudflare-dns-updater && docker rm cloudflare-dns-updater
    ```
 
-## 🧪 Testing
+## 🥾 Testing
 
 To manually test that the script works without updating Cloudflare, log IP values:
 ```sh

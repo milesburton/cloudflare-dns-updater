@@ -1,10 +1,18 @@
 import { config } from "dotenv";
 import { fetch } from "bun";
 import pino from "pino";
+import pretty from "pino-pretty";
+
+const logger = pino(
+  pretty({
+    colorize: true,
+    translateTime: "HH:MM:ss Z",
+    ignore: "pid,hostname",
+  })
+);
+
 
 config();
-
-const logger = pino();
 
 const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 const ZONE_ID = process.env.ZONE_ID;

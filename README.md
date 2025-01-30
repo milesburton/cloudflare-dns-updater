@@ -156,7 +156,6 @@ docker logs -f cloudflare-dns-updater
 ```
 
 The container will keep running and checking periodically. All output is directed to Docker logs.
-```
 
 ### Monitoring Container Status
 

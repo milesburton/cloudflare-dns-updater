@@ -19,7 +19,7 @@ if [ ! -f .env ]; then
   cat <<EOT >> .env
 CLOUDFLARE_API_TOKEN=your_cloudflare_api_token
 ZONE_ID=your_zone_id
-DOMAIN=london.agileview.co.uk
+DOMAIN=your_domain
 CHECK_IP_SERVICE=https://api64.ipify.org?format=json
 EOT
   echo "✅ .env file created. Please update it with your actual credentials."

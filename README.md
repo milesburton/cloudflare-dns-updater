@@ -5,7 +5,7 @@ A TypeScript application built with Bun that automatically updates Cloudflare DN
 ## 🚀 Features
 
 - Automatic DNS record updates when your IP changes
-- Configurable check intervals
+- Flexible running modes: one-time check or continuous monitoring
 - Docker support for containerised deployment
 - Built with TypeScript and Bun for optimal performance
 - Automatic Record ID retrieval from Cloudflare
@@ -62,6 +62,36 @@ ln -s ~/cloudflare-dns-updater-config/.env .env
 
 ## 🚀 Getting Started
 
+### Running Modes
+
+The application supports two running modes:
+
+1. **One-time Check (Default)**
+   ```sh
+   bun run start
+   ```
+   Perfect for use with cron jobs or scheduled tasks.
+
+2. **Continuous Monitoring**
+   ```sh
+   bun run start --interval=15  # Checks every 15 minutes
+   ```
+   Keeps running and checks at specified intervals.
+
+### Command Line Options
+
+| Flag | Description | Example | Default |
+|------|-------------|---------|---------|
+| --interval=X | Run continuously, checking every X minutes | --interval=15 | Single run |
+| --test | Run without making actual DNS updates | --test | false |
+| --force | Force DNS update even if IP hasn't changed | --force | false |
+
+Multiple flags can be combined, for example:
+```sh
+bun run start --test --interval=5  # Test mode, checking every 5 minutes
+bun run start --force --interval=30  # Force updates every 30 minutes
+```
+
 ### Local Development
 
 1. Install dependencies:
@@ -71,7 +101,9 @@ bun install
 
 2. Start the application:
 ```sh
-bun run start
+bun run start       # One-time check
+# or
+bun run start --interval=30  # Check every 30 minutes
 ```
 
 ### Docker Deployment
@@ -83,12 +115,29 @@ docker build -t cloudflare-dns-updater .
 
 2. Run with persistent configuration:
 ```sh
+# One-time check
+docker run -d \
+  --name cloudflare-dns-updater \
+  --env-file ~/cloudflare-dns-updater-config/.env \
+  -v ~/cloudflare-dns-updater-config:/app/config \
+  cloudflare-dns-updater
+
+# Continuous monitoring
 docker run -d \
   --name cloudflare-dns-updater \
   --restart unless-stopped \
   --env-file ~/cloudflare-dns-updater-config/.env \
   -v ~/cloudflare-dns-updater-config:/app/config \
-  cloudflare-dns-updater
+  cloudflare-dns-updater --interval=15
+```
+
+### Cron Job Setup (Alternative to --interval)
+
+For one-time check mode, you can create a cron job:
+
+```sh
+# Check every 15 minutes
+*/15 * * * * cd /path/to/app && bun run start
 ```
 
 ## 🧪 Testing
@@ -101,6 +150,9 @@ bun run start --test
 
 # Force update mode
 bun run start --force
+
+# Test continuous monitoring
+bun run start --test --interval=5
 
 # Check logs in Docker
 docker logs cloudflare-dns-updater
@@ -144,7 +196,11 @@ Common issues and solutions:
    - Confirm IP change detection is working
    - Check Cloudflare API response in logs
 
-## 📄 License
+4. **Interval Mode Issues**
+   - Ensure the interval value is a positive number
+   - Check system sleep/hibernate settings
+
+## 📄 Licence
 
 This project is licenced under the [MIT Licence](./LICENSE).
 

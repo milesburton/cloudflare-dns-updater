@@ -11,18 +11,44 @@ const logger = pino(
   })
 );
 
-
 config();
 
+// Environment variables and configuration
 const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 const ZONE_ID = process.env.ZONE_ID;
 let RECORD_ID: string | undefined = process.env.RECORD_ID;
 const DOMAIN = process.env.DOMAIN;
-const CHECK_IP_SERVICE = process.env.CHECK_IP_SERVICE;
+const CHECK_IP_SERVICE = process.env.CHECK_IP_SERVICE || "https://api64.ipify.org?format=json";
 
+// Command line arguments
 const args = process.argv.slice(2);
 const isTestMode = args.includes("--test");
 const isForceUpdate = args.includes("--force");
+const intervalFlag = args.find(arg => arg.startsWith("--interval="));
+const intervalMinutes = intervalFlag 
+  ? parseInt(intervalFlag.split("=")[1]) 
+  : 0;
+
+// Validate required environment variables
+function validateConfig() {
+  const required = [
+    { name: 'CLOUDFLARE_API_TOKEN', value: CLOUDFLARE_API_TOKEN },
+    { name: 'ZONE_ID', value: ZONE_ID },
+    { name: 'DOMAIN', value: DOMAIN }
+  ];
+
+  const missing = required.filter(({ name, value }) => !value);
+  
+  if (missing.length > 0) {
+    logger.error(`Missing required environment variables: ${missing.map(m => m.name).join(', ')}`);
+    process.exit(1);
+  }
+
+  if (intervalMinutes < 0) {
+    logger.error("Interval minutes must be a positive number");
+    process.exit(1);
+  }
+}
 
 async function getCurrentIP(): Promise<string | null> {
   try {
@@ -126,8 +152,7 @@ async function updateCloudflareDNS(ip: string) {
   }
 }
 
-async function main() {
-  logger.info("🚀 Starting Cloudflare Dynamic DNS updater...");
+async function checkAndUpdate() {
   const currentIP = await getCurrentIP();
   if (!currentIP) return;
 
@@ -141,7 +166,41 @@ async function main() {
     logger.info(`🔄 Updating Cloudflare DNS record from ${cloudflareIP} to ${currentIP}...`);
     await updateCloudflareDNS(currentIP);
   }
-  
 }
 
-main();
+async function main() {
+  logger.info("🚀 Starting Cloudflare Dynamic DNS updater...");
+  
+  validateConfig();
+
+  // Log running mode
+  if (isTestMode) logger.info("🧪 Running in test mode - no actual updates will be made");
+  if (isForceUpdate) logger.info("⚡ Force update mode enabled");
+  if (intervalMinutes > 0) {
+    logger.info(`⏰ Running in interval mode - checking every ${intervalMinutes} minutes`);
+  }
+
+  await checkAndUpdate();
+
+  // If interval is specified, continue running
+  if (intervalMinutes > 0) {
+    setInterval(checkAndUpdate, intervalMinutes * 60 * 1000);
+  }
+}
+
+// Handle process termination
+process.on('SIGINT', () => {
+  logger.info('👋 Gracefully shutting down...');
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  logger.info('👋 Gracefully shutting down...');
+  process.exit(0);
+});
+
+// Start the application
+main().catch(error => {
+  logger.error('Fatal error:', error);
+  process.exit(1);
+});

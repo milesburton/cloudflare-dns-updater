@@ -1,161 +1,153 @@
-# 🌐 Cloudflare DNS Updater 🚀
+# 🌐 Cloudflare DNS Updater
 
-This project is a simple TypeScript application using Bun that updates the Cloudflare DNS record for a given domain when the external IP address changes.
+A TypeScript application built with Bun that automatically updates Cloudflare DNS records when your external IP address changes. Perfect for maintaining dynamic DNS settings for your domain. Optimised for performance and ease of use.
 
-## 📌 Prerequisites
+## 🚀 Features
 
-- 🔑 A Cloudflare API token with DNS edit permissions
-- ⛳ Your domain name (for example google.com)
-- 🛠 optional [Bun](https://bun.sh/) installed (if you plan to run locally rather than via docker)
-- 🐳 optional Docker installed (for containerisation)
+- Automatic DNS record updates when your IP changes
+- Configurable check intervals
+- Docker support for containerised deployment
+- Built with TypeScript and Bun for optimal performance
+- Automatic Record ID retrieval from Cloudflare
+- Comprehensive logging and error handling
 
+## 📋 Prerequisites
+
+You'll need the following to get started:
+
+### Required
+- A Cloudflare account with:
+  - An API token with DNS edit permissions for your domain
+  - A domain managed through Cloudflare
+- Node.js 16+ (if running without Docker)
+
+### Optional (Choose One)
+- **Local Development:**
+  - [Bun](https://bun.sh/) installed on your system
+  - Git for version control
+- **Docker Deployment:**
+  - Docker Engine 20.10.0 or newer
+  - Docker Compose (recommended for easier management)
 
 ## ⚙️ Configuration
 
-### Setting Up the Environment
+### Environment Setup
 
-Ensure that a `.env` file exists in the project root. If it does not exist, create one with the following content:
-
+1. Create a configuration directory:
 ```sh
-if [ ! -f .env ]; then
-  cat <<EOT >> .env
+mkdir -p ~/cloudflare-dns-updater-config
+```
+
+2. Create a `.env` file in the configuration directory:
+```sh
+cat <<EOT >> ~/cloudflare-dns-updater-config/.env
 CLOUDFLARE_API_TOKEN=your_cloudflare_api_token
 DOMAIN=your_domain
 CHECK_IP_SERVICE=https://api64.ipify.org?format=json
 EOT
-  echo "✅ .env file created. Please update it with your actual credentials."
-fi
 ```
 
-### Automatic Record ID Retrieval
+3. Link the configuration to your project:
+```sh
+ln -s ~/cloudflare-dns-updater-config/.env .env
+```
 
-The script automatically retrieves the **Record ID** from Cloudflare. You no longer need to manually input it in the `.env` file.
+### Configuration Options
 
-### Using a Shared Configuration Folder
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| CLOUDFLARE_API_TOKEN | Your Cloudflare API token | Yes | - |
+| DOMAIN | The domain to update | Yes | - |
+| CHECK_IP_SERVICE | Service to check your public IP | No | api64.ipify.org |
 
-To keep the `.env` file in a central location for easier management, follow these steps:
+## 🚀 Getting Started
 
-1. **Ensure the configuration folder exists**:
-   ```sh
-   mkdir -p ~/cloudflare-dns-updater-config
-   ```
-
-2. **Move the `.env` file if it doesn't already exist**:
-   ```sh
-   if [ ! -f ~/cloudflare-dns-updater-config/.env ]; then
-     mv .env ~/cloudflare-dns-updater-config/.env
-   fi
-   ```
-
-3. **Create a symlink in the project directory**:
-   ```sh
-   if [ ! -L .env ]; then
-     ln -s ~/cloudflare-dns-updater-config/.env .env
-   fi
-   ```
-
-Now, modifications to `~/cloudflare-dns-updater-config/.env` will be reflected in the project.
-
-## 📥 Installation
+### Local Development
 
 1. Install dependencies:
-   ```sh
-   bun install
-   ```
+```sh
+bun install
+```
 
-2. Run the script manually:
-   ```sh
-   bun run index.ts
-   ```
+2. Start the application:
+```sh
+bun run start
+```
 
+### Docker Deployment
 
-## 📜 Example Output (Formatted Logs)
+1. Build the container:
+```sh
+docker build -t cloudflare-dns-updater .
+```
+
+2. Run with persistent configuration:
+```sh
+docker run -d \
+  --name cloudflare-dns-updater \
+  --restart unless-stopped \
+  --env-file ~/cloudflare-dns-updater-config/.env \
+  -v ~/cloudflare-dns-updater-config:/app/config \
+  cloudflare-dns-updater
+```
+
+## 🧪 Testing
+
+The application includes several testing modes:
+
+```sh
+# Test mode (no Cloudflare updates)
+bun run start --test
+
+# Force update mode
+bun run start --force
+
+# Check logs in Docker
+docker logs cloudflare-dns-updater
+```
+
+## 🛠 Development
+
+### Code Quality
+
+Maintain code quality with built-in tools:
+
+```sh
+# Lint code
+bun run lint
+
+# Format code
+bun run format
+```
+
+### Example Output
+
 ```
 12:34:56 Z 🚀 Starting Cloudflare Dynamic DNS updater...
 12:34:57 Z 🌍 Fetching current public IP...
 12:34:58 Z ✅ Current IP retrieved: 192.168.1.1
 ```
 
-## 🛠 Code Formatting and Linting
+## 🔍 Troubleshooting
 
-To check for linting issues:
-```sh
-bun run lint
-```
+Common issues and solutions:
 
-To auto-format the code using Prettier:
-```sh
-bun run format
-```
+1. **API Token Issues**
+   - Verify token permissions in Cloudflare dashboard
+   - Ensure token has DNS edit access
 
-## 🐳 Running with Docker
+2. **Container Won't Start**
+   - Check logs: `docker logs cloudflare-dns-updater`
+   - Verify environment file exists and is readable
 
-1. Build the Docker image:
-   ```sh
-   docker build -t cloudflare-dns-updater .
-   ```
+3. **DNS Not Updating**
+   - Confirm IP change detection is working
+   - Check Cloudflare API response in logs
 
-2. Run the container with the `.env` file mounted:
-   ```sh
-   docker run --rm --env-file ~/cloudflare-dns-updater-config/.env -v ~/cloudflare-dns-updater-config:/app/config cloudflare-dns-updater
-   ```
+## 📄 License
 
-## 🔄 Running Persistently with Docker
+This project is licenced under the [MIT Licence](./LICENSE).
 
-If you're using a shared configuration folder, update the Docker command to use the external `.env` file location:
+## 🤝 Contributing
 
-```sh
-docker run -d --name cloudflare-dns-updater --restart unless-stopped \
-  --env-file ~/cloudflare-dns-updater-config/.env \
-  -v ~/cloudflare-dns-updater-config:/app/config \
-  cloudflare-dns-updater
-```
-
-To run the container persistently in the background and restart on system reboot:
-
-1. Start the container in detached mode with auto-restart:
-   ```sh
-   docker run -d --name cloudflare-dns-updater --restart unless-stopped --env-file ~/cloudflare-dns-updater-config/.env -v ~/cloudflare-dns-updater-config:/app/config cloudflare-dns-updater
-   ```
-
-2. Check the running container:
-   ```sh
-   docker ps
-   ```
-
-3. Stop and remove the container if needed:
-   ```sh
-   docker stop cloudflare-dns-updater && docker rm cloudflare-dns-updater
-   ```
-
-## 🥾 Testing
-
-To manually test that the script works without updating Cloudflare, log IP values:
-```sh
-bun run start --test
-```
-
-To force an update even if the IP hasn't changed, use:
-```sh
-bun run start --force
-```
-
-This can be useful for testing or ensuring DNS propagation.
-
-To manually test that the script works without updating Cloudflare, log IP values:
-```sh
-bun run start --test
-```
-
-## 🔧 Handling Errors and Debugging
-
-If you encounter errors, check the logs using:
-```sh
-docker logs cloudflare-dns-updater
-```
-
-Ensure that your `.env` file is correctly set up and that your Cloudflare API token has the required permissions.
-
-## 📜 Licence
-This project is licenced under the [MIT License](LICENSE).
-
+Contributions are welcome! Please feel free to submit a Pull Request.

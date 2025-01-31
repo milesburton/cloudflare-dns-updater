@@ -206,7 +206,6 @@ Common issues:
 - Permission issues with the config directory
 - Network connectivity problems
 - Invalid Cloudflare API token
-```
 
 ### Docker Output and Logs
 

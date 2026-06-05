@@ -63,6 +63,8 @@ ln -s ~/cloudflare-dns-updater-config/.env .env
 
 To obtain your cloudflare key you will need to head over to [API Tokens](https://dash.cloudflare.com/profile/api-tokens) and generate a new zone permission with READ and EDIT token. Please refer to the cloudflare documentation for specific details. 
 
+For the ZONE_ID this is on your domain dashboard (somewhere at the bottom right)
+
 ## 🚀 Getting Started
 
 ### Running Modes

@@ -57,10 +57,11 @@ ln -s ~/cloudflare-dns-updater-config/.env .env
 | Variable | Description | Required | Default |
 |----------|-------------|----------|---------|
 | CLOUDFLARE_API_TOKEN | Your Cloudflare API token | Yes | - |
+| ZONE_ID | Domain Zone ID | Yes | - |
 | DOMAIN | The domain to update | Yes | - |
 | CHECK_IP_SERVICE | Service to check your public IP | No | api64.ipify.org |
 
-To obtain your cloudflare key you will need to head over to [API Tokens](https://dash.cloudflare.com/profile/api-tokens) and generate a new edit zone dns token. Please refer to the cloudflare documentation for specific details. 
+To obtain your cloudflare key you will need to head over to [API Tokens](https://dash.cloudflare.com/profile/api-tokens) and generate a new zone permission with READ and EDIT token. Please refer to the cloudflare documentation for specific details. 
 
 ## 🚀 Getting Started
 
